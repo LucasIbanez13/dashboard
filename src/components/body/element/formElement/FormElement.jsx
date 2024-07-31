@@ -4,8 +4,7 @@ const FormElement = ({ existingIds, onAdd }) => {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState('');
   const [description, setDescription] = useState('');
-  const [error, setError] = useState('');
-
+  
   const generateNextId = () => {
     const maxId = Math.max(...existingIds, 0);
     return maxId + 1;
@@ -32,6 +31,10 @@ const FormElement = ({ existingIds, onAdd }) => {
         body: JSON.stringify(newElement)
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const result = await response.json();
       console.log('Response:', result);
 
@@ -40,15 +43,10 @@ const FormElement = ({ existingIds, onAdd }) => {
         setTitle('');
         setImage('');
         setDescription('');
-        setError('');
-        window.location.href = '/'; // Redirige a la ruta /producto
-      } else {
-        setError('Error al agregar el elemento. Por favor, inténtalo de nuevo.');
-        console.error('Error al agregar el elemento:', result);
       }
     } catch (error) {
-      setError('Error al enviar los datos. Por favor, verifica tu conexión a Internet e inténtalo de nuevo.');
-      console.error('Error al enviar los datos:', error);
+      window.location.href = '/'; // Redirige a la ruta /
+
     }
   };
 
@@ -83,7 +81,6 @@ const FormElement = ({ existingIds, onAdd }) => {
           required
         />
       </div>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
       <button
         type="submit"
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
